@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<!--
+	<meta http-equiv="X-Frame-Options" content="ALLOWAll">
+	-->
+	<meta charset="UTF-8">
+	<style>
+		body { margin:0;padding:0; }
+		#test_video {}
+	</style>
+	<script>
+		// ########################################################################
+		var getParameters = function (paramName) {
+			// 리턴값을 위한 변수 선언
+			var returnValue;
+
+			// 현재 URL 가져오기
+			var url = location.href;
+
+			// get 파라미터 값을 가져올 수 있는 ? 를 기점으로 slice 한 후 split 으로 나눔
+			var parameters = (url.slice(url.indexOf('?') + 1, url.length)).split('&');
+
+			// 나누어진 값의 비교를 통해 paramName 으로 요청된 데이터의 값만 return
+			for(var i=0; i<parameters.length; i++) {
+				var varName = parameters[i].split('=')[0];
+				if (varName.toUpperCase() == paramName.toUpperCase()) {
+					returnValue = parameters[i].split('=')[1];
+					return decodeURIComponent(returnValue);
+				}
+			}
+		};		
+	</script>
+</head>
+<body> 
+	<!--
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-polyfill/6.23.0/polyfill.min.js"></script>
+	<script src="async-to-sync/browser/no-es2017/index.min.js"></script>
+	-->
+	<script src="jquery-1.8.2.min.js"></script>
+	<script src="free.player.1.8.js"></script>
+	<!--
+	<video id="test_video" controls muted autoplay></video>
+	-->
+	<video id="test_video" controls muted autoplay poster="idigitalu.png">
+		<!--
+		<source src="rtsp://211.252.223.178/226/video2d" type="application/x-rtsp">
+		-->
+	</video>
+	<script type="text/javascript">
+	<!--
+		var fid;
+
+		// ########################################################################
+		$(function() {
+
+		});
+
+		window.addEventListener('message', function(e) {
+			console.log(e.data);
+		});
+
+		// ########################################################################
+		function set_url(url, w, h, tp) {
+			test_video.src = url;
+			/*
+			Streamedian.player('test_video', {socket:"ws://121.167.147.208:30022/ws/"});
+			Streamedian.player('test_video', {socket:"ws://rtsp.seoul.go.kr:30022/ws/"});
+			*/
+			Streamedian.player('test_video', {socket:"ws://127.0.0.1:30022/ws/"});		
+			var player = document.getElementById('test_video');
+
+			if(tp = "s") {
+				document.getElementById('test_video').width = w - 5;
+				document.getElementById('test_video').height = h - 5;
+			}
+
+		}
+
+		// ########################################################################
+		window.onload = function() {
+			/*
+			alert(getParameters("cctvUrl"));
+			*/
+			fid = getParameters("fid");
+			set_url(getParameters("cctvUrl"), getParameters("w"), getParameters("h"), getParameters("tp"));
+
+			/*
+			window.parent.postMessage({ hello: 'parent' }, '*');
+			*/
+		}
+
+		// ########################################################################
+		function sleep(ms) {
+			ts1 = new Date().getTime() + ms;
+			do ts2 = new Date().getTime(); while(ts2 < ts1);
+		}
+
+		// ########################################################################
+		var HttpClient = function() {
+			this.get = function(aUrl, aCallback) {
+				var anHttpRequest = new XMLHttpRequest();
+				anHttpRequest.onreadystatechange = function() { 
+					if(anHttpRequest.readyState == 4 && anHttpRequest.status == 200)
+						aCallback(anHttpRequest.responseText);
+					else if(anHttpRequest.readyState == 4 && anHttpRequest.status == 404)
+						aCallback("404");
+				}
+
+				anHttpRequest.open( "GET", aUrl, true );            
+				anHttpRequest.send( null );
+			}
+		}
+
+		// ########################################################################
+		function objToString (obj) {
+			var str = '';
+			for(var p in obj) {
+				if(obj.hasOwnProperty(p)) {
+					str += p + '::' + obj[p] + '\n';
+				}
+			}
+			return str;
+		}
+		// ########################################################################
+	//-->
+	</script>
+	<style>
+		video {
+			/*
+			width:305px;
+			height:160px; 
+			background:transparent url('idigitalu.png') no-repeat 0 0;
+			*/
+			background:url('idigitalu.png') no-repeat 0 0;
+			-webkit-background-size:cover;
+			-moz-background-size:cover;
+			-o-background-size:cover;
+			background-size:cover;
+		}
+	</style>
+<!--
+	<script> 
+		var myVideo = document.getElementById("test_video"); 
+		var att = document.createAttribute("poster");
+		if(myVideo.error) {
+			switch(myVideo.error.code) {
+				case MEDIA_ERR_NETWORK : alert("Network error - please try again later."); break;
+				case MEDIA_ERR_DECODE : alert("Video is broken.."); break;
+				case MEDIA_ERR_SRC_NOT_SUPPORTED : alert("Sorry, your browser can't play this video."); break;
+			}
+		}
+		else {
+			function playPause() { 
+				if(myVideo.paused) {
+					myVideo.play();
+					att.value = "";
+					myVideo.setAttributeNode(att);
+				}
+				else myVideo.pause();
+			}
+		}                       
+	</script>
+-->
+</body>
+</html>
