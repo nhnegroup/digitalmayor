@@ -11,7 +11,7 @@
 	</style>
 	<script>
 		// ########################################################################
-		var getParameters = function (paramName) {
+		var getParameters = function(paramName) {
 			// 리턴값을 위한 변수 선언
 			var returnValue;
 
@@ -50,6 +50,8 @@
 	<script type="text/javascript">
 	<!--
 		var fid;
+		var proxyServerWs;
+		var defaultProxyServerWs = "ws://127.0.0.1:30022/ws/";
 
 		// ########################################################################
 		$(function() {
@@ -61,13 +63,14 @@
 		});
 
 		// ########################################################################
-		function set_url(url, w, h, tp) {
+		function set_url(url, w, h, tp, ws) {
 			test_video.src = url;
 			/*
 			Streamedian.player('test_video', {socket:"ws://121.167.147.208:30022/ws/"});
 			Streamedian.player('test_video', {socket:"ws://rtsp.seoul.go.kr:30022/ws/"});
-			*/
 			Streamedian.player('test_video', {socket:"ws://127.0.0.1:30022/ws/"});		
+			*/
+			Streamedian.player('test_video', {socket : ws});		
 			var player = document.getElementById('test_video');
 
 			if(tp = "s") {
@@ -83,7 +86,13 @@
 			alert(getParameters("cctvUrl"));
 			*/
 			fid = getParameters("fid");
-			set_url(getParameters("cctvUrl"), getParameters("w"), getParameters("h"), getParameters("tp"));
+			proxyServerWs = getParameters("ws");
+
+			if(typeof proxyServerWs === "undefined" || proxyServerWs === undefined || proxyServerWs == null || port == "undefined" || proxyServerWs == "") {
+				proxyServerWs = defaultProxyServerWs;
+			}
+
+			set_url(getParameters("cctvUrl"), getParameters("w"), getParameters("h"), getParameters("tp"), proxyServerWs);
 
 			/*
 			window.parent.postMessage({ hello: 'parent' }, '*');
