@@ -49,11 +49,22 @@
 			/*
 			[mse] Media source closed: closed
 			[transport:ws] [ctrl] close. code: 1006 unknown reason
+			invalid AVC
+			Ignored unknown
 			*/
+
 			if(this.level>=lvl) console[Logger.level_map[lvl]].apply(console, args);
 		}
 
 		log() {
+			var args = Array.prototype.slice.call(arguments);
+			if(args.length > 0) {
+				if(
+					args[0].indexOf("invalid AVC") > -1 
+				) {
+					window.parent.postMessage({ ERR : 'error' + '|' + fid }, '*');
+				}
+			}
 			this._log(LogLevel.Log, arguments);
 		}
 
@@ -70,7 +81,13 @@
 			/*
 			var args = Array.prototype.slice.call(arguments);
 			if(args.length > 0) {
-				if(args[0].indexOf("error") > -1 || args[0].indexOf("1006") > -1 || args[0].indexOf("unknown reason") > -1) {
+				if(
+					args[0].indexOf("error") > -1 
+					|| args[0].indexOf("1006") > -1 
+					|| args[0].indexOf("unknown reason") > -1 
+					|| args[0].indexOf("1011") > -1 
+					|| args[0].indexOf("Remote write error") > -1 
+				) {
 					window.parent.postMessage({ ERR : 'error' + '|' + fid }, '*');
 				}
 			}
@@ -4201,9 +4218,14 @@
 				}
 				*/
 				
+				// ### 404 에러 시 상위로 전달
+				/*
 				if(data.msg.indexOf("404") > -1) {
 					window.parent.postMessage({ ERR : '404' + '|' + fid }, '*');
 				}
+				*/
+				// ### 무조건 상위로 전달
+				window.parent.postMessage({ ERR : 'error|' + fid }, '*');
 			}
 		}
 	}
