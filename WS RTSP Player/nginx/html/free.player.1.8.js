@@ -2524,6 +2524,9 @@
 			Log$5.debug(`ontracks: `, tracks.detail);
 			// store available track types
 			for(let track of tracks.detail) {
+
+				Log$5.debug(`track: `, track);
+
 				this.tracks[track.type] = new Remuxer.TrackConverters[track.type](Remuxer.TrackTimescale[track.type], Remuxer.TrackScaleFactor[track.type], track.params);
 				if(track.offset) {
 					this.tracks[track.type].timeOffset = track.offset;
@@ -4123,7 +4126,7 @@
 
 
 	class RTSPClient extends BaseClient {
-		constructor(options={flush: 200}) {
+		constructor(options={flush: 100}) {
 			super(options);
 			this.clientSM = new RTSPClientSM(this);
 			this.clientSM.ontracks = (tracks) => {
@@ -4556,12 +4559,15 @@
 
 			// TODO: select first video and first audio tracks
 			for(let track_type of this.tracks) {
-				Log$9.log("setup track: "+track_type);
-				// if(track_type=='audio') continue;
-				// if(track_type=='video') continue;
+				Log$9.log("setup track: " + track_type);
+				if(track_type == 'audio') continue;
+				if(track_type == 'application') continue;
+				/*
+				if(track_type == 'video') continue;
+				*/
 				let track = this.sdp.getMediaBlock(track_type);
 
-			if(track.rtpmap[track.fmt[0]] === undefined) continue;
+				if(track.rtpmap[track.fmt[0]] === undefined) continue;
 				if(!PayloadType.string_map[track.rtpmap[track.fmt[0]].name]) continue;
 
 				this.streams[track_type] = new RTSPStream(this, track);
@@ -9288,6 +9294,8 @@
 				this.close();
 				// .then(this.connect.bind(this));
 				// return;
+
+				// ### 여기 오류 throw
 				throw new Error('disconnected');
 			}
 			// Log.debug(payload);
