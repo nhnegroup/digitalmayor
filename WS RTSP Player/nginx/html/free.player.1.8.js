@@ -62,7 +62,9 @@
 				if(
 					args[0].indexOf("invalid AVC") > -1 
 				) {
+					/*
 					window.parent.postMessage({ ERR : 'error' + '|' + fid }, '*');
+					*/
 				}
 			}
 			this._log(LogLevel.Log, arguments);
@@ -93,7 +95,8 @@
 			}
 			*/
 			// ### 에러 내용과 상관없이 무조건 상위로 던진다.
-			window.parent.postMessage({ ERR : 'error' + '|' + fid }, '*');
+			if(typeof fid === "undefined" || fid === undefined || fid == null || fid == "undefined" || fid == "") {} 
+			else { window.parent.postMessage({ ERR : 'error' + '|' + fid }, '*'); }
 
 			this._log(LogLevel.Error, arguments);
 		}
@@ -306,7 +309,7 @@
 			}
 		}
 
-		off(event, fn){
+		off(event, fn) {
 			this.eventSource.removeEventListener(event, fn);
 		}
 
@@ -469,7 +472,7 @@
 				len = i,
 				result;
 			// calculate the total size we need to allocate
-			while (i--) {
+			while(i--) {
 				size += payload[i].byteLength;
 			}
 			result = new Uint8Array(size);
@@ -548,7 +551,7 @@
 				i = tracks.length,
 				boxes = [];
 
-			while (i--) {
+			while(i--) {
 				boxes[i] = MP4.trak(tracks[i]);
 			}
 
@@ -560,7 +563,7 @@
 				i = tracks.length,
 				boxes = [];
 
-			while (i--) {
+			while(i--) {
 				boxes[i] = MP4.trex(tracks[i]);
 			}
 			return MP4.box.apply(null, [MP4.types.mvex].concat(boxes));
@@ -983,7 +986,7 @@
 					} catch (e) {
 						// TODO: do something?
 					}
-					while (this.cleanResolvers.length) {
+					while(this.cleanResolvers.length) {
 						let resolver = this.cleanResolvers.shift();
 						resolver();
 					}
@@ -1034,7 +1037,7 @@
 			for(let i=0; i< this.sourceBuffer.buffered.length; ++i) {
 				// TODO: await remove
 				this.cleaning = true;
-				promises.push(new Promise((resolve, reject)=>{
+				promises.push(new Promise((resolve, reject) => {
 					this.cleanResolvers.push(resolve);
 					if(!this.sourceBuffer.updating) {
 						this.sourceBuffer.remove(this.sourceBuffer.buffered.start(i), this.sourceBuffer.buffered.end(i));
@@ -1141,9 +1144,9 @@
 			if(err) {
 				Log$1.error(`Error occured: ${MSE.ErrorNotes[err.code]}`);
 				try {
-					this.players.forEach((video)=>{video.stop();});
+					this.players.forEach((video) => {video.stop(); });
 					this.mediaSource.endOfStream();
-				} catch (e){
+				} catch (e) {
 
 				}
 				this.parent.eventSource.dispatchEvent('error');
@@ -1185,7 +1188,7 @@
 		// static CODEC_VORBIS = "vorbis";
 		// static CODEC_THEORA = "theora";
 
-		static get ErrorNotes() {return  {
+		static get ErrorNotes() { return  {
 			[MediaError.MEDIA_ERR_ABORTED] : 'fetching process aborted by user',
 			[MediaError.MEDIA_ERR_NETWORK] : 'error occurred when downloading',
 			[MediaError.MEDIA_ERR_DECODE] : 'error occurred when decoding',
@@ -1260,7 +1263,7 @@
 		// ### here...
 		clear() {
 			this.reset();
-			this.players.forEach((video)=>{video.src = URL.createObjectURL(this.mediaSource);});
+			this.players.forEach((video) => {video.src = URL.createObjectURL(this.mediaSource); });
 			return this.setupEvents();
 		}
 
@@ -1277,10 +1280,10 @@
 						resolve();
 					}
 				};
-				this._sourceEnded = ()=>{
+				this._sourceEnded = () => {
 					Log$1.debug(`Media source ended: ${this.mediaSource.readyState}`);
 				};
-				this._sourceClose = ()=>{
+				this._sourceClose = () => {
 					// ### here...closed
 					Log$1.debug(`Media source closed: ${this.mediaSource.readyState}`);
 					if(this.resolved) {
@@ -1310,7 +1313,7 @@
 			this.resolved = false;
 			this.buffers = {};
 
-			// this.players.forEach((video)=>{video.src = URL.createObjectURL(this.mediaSource)});
+			// this.players.forEach((video) => {video.src = URL.createObjectURL(this.mediaSource)});
 			// TODO: remove event listeners for existing media source
 			// this.setupEvents();
 			// this.clear();
@@ -1347,7 +1350,7 @@
 	let track_id = 1;
 	class BaseRemuxer {
 
-		static get MP4_TIMESCALE() { return 90000;}
+		static get MP4_TIMESCALE() { return 90000; }
 
 		// TODO: move to ts parser
 		// static PTSNormalize(value, reference) {
@@ -1366,7 +1369,7 @@
 		//     /* PTS is 33bit (from 0 to 2^33 -1)
 		//      if diff between value and reference is bigger than half of the amplitude (2^32) then it means that
 		//      PTS looping occured. fill the gap */
-		//     while (Math.abs(value - reference) > 4294967296) {
+		//     while(Math.abs(value - reference) > 4294967296) {
 		//         value += offset;
 		//     }
 		//     return value;
@@ -1448,7 +1451,7 @@
 			// let samples=this.mp4track.samples;
 			// let mp4Sample, lastDTS, pts, dts;
 			//
-			// while (this.samples.length) {
+			// while(this.samples.length) {
 			//     let sample = this.samples.shift();
 			//     if(sample === null) {
 			//         // discontinuity
@@ -1548,7 +1551,7 @@
 			let samples=this.mp4track.samples;
 			let mp4Sample, lastDTS, pts, dts;
 
-			while (this.samples.length) {
+			while(this.samples.length) {
 				let sample = this.samples.shift();
 				if(sample === null) {
 					// discontinuity
@@ -1852,24 +1855,24 @@
 
 	class NALU {
 
-		static get NDR() {return 1;}
-		static get SLICE_PART_A() {return 2;}
-		static get SLICE_PART_B() {return 3;}
-		static get SLICE_PART_C() {return 4;}
-		static get IDR() {return 5;}
-		static get SEI() {return 6;}
-		static get SPS() {return 7;}
-		static get PPS() {return 8;}
-		static get DELIMITER() {return 9;}
-		static get EOSEQ() {return 10;}
-		static get EOSTR() {return 11;}
-		static get FILTER() {return 12;}
-		static get STAP_A() {return 24;}
-		static get STAP_B() {return 25;}
-		static get FU_A() {return 28;}
-		static get FU_B() {return 29;}
+		static get NDR() { return 1; }
+		static get SLICE_PART_A() { return 2; }
+		static get SLICE_PART_B() { return 3; }
+		static get SLICE_PART_C() { return 4; }
+		static get IDR() { return 5; }
+		static get SEI() { return 6; }
+		static get SPS() { return 7; }
+		static get PPS() { return 8; }
+		static get DELIMITER() { return 9; }
+		static get EOSEQ() { return 10; }
+		static get EOSTR() { return 11; }
+		static get FILTER() { return 12; }
+		static get STAP_A() { return 24; }
+		static get STAP_B() { return 25; }
+		static get FU_A() { return 28; }
+		static get FU_B() { return 29; }
 
-		static get TYPES() {return {
+		static get TYPES() { return {
 			[NALU.IDR]: 'IDR',
 			[NALU.SEI]: 'SEI',
 			[NALU.SPS]: 'SPS',
@@ -1946,6 +1949,10 @@
 
 			this.track.width = config.width;
 			this.track.height = config.height;
+			/*
+			if(config.height > 400) this.track.height = 400;
+			*/
+
 			this.track.sps = [new Uint8Array(sps)];
 			// this.track.timescale = this.remuxer.timescale;
 			// this.track.duration = this.remuxer.timescale; // TODO: extract duration for non-live client
@@ -2010,7 +2017,7 @@
 					let pay_size = 0;
 					let sz = data.getUint8(byte_idx);
 					++byte_idx;
-					while (sz === 255) {
+					while(sz === 255) {
 						pay_size+=sz;
 						sz = data.getUint8(byte_idx);
 						++byte_idx;
@@ -2183,7 +2190,7 @@
 						sarScale = sarRatio[0] / sarRatio[1];
 					}
 				}
-				if(decoder.readBoolean()) {decoder.skipBits(1);}
+				if(decoder.readBoolean()) {decoder.skipBits(1); }
 
 				if(decoder.readBoolean()) {
 					decoder.skipBits(4);
@@ -2327,12 +2334,12 @@
 			let mp4Sample, lastDTS, pts, dts;
 
 
-			// Log.debug(this.samples.map((e)=>{
+			// Log.debug(this.samples.map((e) => {
 			//     return Math.round((e.dts - this.initDTS));
 			// }));
 
 			// let minDuration = Number.MAX_SAFE_INTEGER;
-			while (this.samples.length) {
+			while(this.samples.length) {
 				let sample = this.samples.shift();
 				if(sample === null) {
 					// discontinuity
@@ -2442,15 +2449,15 @@
 	}
 
 	class PayloadType {
-		static get H264() {return 1;}
-		static get AAC() {return 2;}
+		static get H264() { return 1; }
+		static get AAC() { return 2; }
 
-		static get map() {return {
+		static get map() { return {
 			[PayloadType.H264]: 'video',
 			[PayloadType.AAC]: 'audio'
 		}};
 
-		static get string_map() {return  {
+		static get string_map() { return  {
 			H264: PayloadType.H264,
 			AAC: PayloadType.AAC,
 			'MP4A-LATM': PayloadType.AAC,
@@ -2462,17 +2469,17 @@
 	const Log$5 = getTagged(LOG_TAG$1);
 
 	class Remuxer {
-		static get TrackConverters() {return {
+		static get TrackConverters() { return {
 			[PayloadType.H264]: H264Remuxer,
 			[PayloadType.AAC]:  AACRemuxer
 		}};
 
-		static get TrackScaleFactor() {return {
+		static get TrackScaleFactor() { return {
 			[PayloadType.H264]: 1,//4,
 			[PayloadType.AAC]:  0
 		}};
 
-		static get TrackTimescale() {return {
+		static get TrackTimescale() { return {
 			[PayloadType.H264]: 90000,//22500,
 			[PayloadType.AAC]:  0
 		}};
@@ -2574,7 +2581,7 @@
 				initmse.push(this.initMSE(track_type, track.mp4track.codec));
 			}
 			this.initialized = true;
-			return Promise.all(initmse).then(()=>{
+			return Promise.all(initmse).then(() => {
 				//this.mse.play();
 				this.enabled = true;
 			});
@@ -2583,7 +2590,7 @@
 
 		initMSE(track_type, codec) {
 			if(MSE.isSupported(this.codecs)) {
-				return this.mse.setCodec(track_type, `${PayloadType.map[track_type]}/mp4; codecs="${codec}"`).then(()=>{
+				return this.mse.setCodec(track_type, `${PayloadType.map[track_type]}/mp4; codecs="${codec}"`).then(() => {
 					this.mse.feed(track_type, this.initSegments[track_type]);
 					// this.mse.play();
 					// this.enabled = true;
@@ -2631,7 +2638,7 @@
 				// console.log(`video ${data.units[0].dts}`);
 			for(let qidx in this.client.sampleQueues) {
 				let queue = this.client.sampleQueues[qidx];
-				while (queue.length) {
+				while(queue.length) {
 					let units = queue.shift();
 					for(let chunk of units) {
 						this.tracks[qidx].remux(chunk);
@@ -2658,9 +2665,9 @@
 			this.clientEventSource.on('flush', this.flush.bind(this));
 			/*
 			// ### 두번 clear 를 막음(상위에서 this.reset()을 이미 수행)
-			this.clientEventSource.on('clear', ()=>{
+			this.clientEventSource.on('clear', () => {
 				this.reset();
-				this.mse.clear().then(()=>{
+				this.mse.clear().then(() => {
 					//this.mse.play();
 					this.initMSEHandlers();
 				});
@@ -2719,7 +2726,7 @@
 			return this;
 		}
 
-		addTransition(fromName, toName){
+		addTransition(fromName, toName) {
 			if(!this.states.has(fromName)) {
 				throw ReferenceError(`No such state: ${fromName} while connecting to ${toName}`);
 			}
@@ -2750,7 +2757,7 @@
 					.then((data)=> {
 						this.currentState = state;
 						return data;
-					}).then(state.finishTransition.bind(this)).catch((e)=>{
+					}).then(state.finishTransition.bind(this)).catch((e) => {
 						state.failHandler();
 						throw e;
 					});
@@ -2762,7 +2769,7 @@
 					.then(state.activate.bind(this)).then((data)=> {
 						this.currentState = state;
 						return data;
-					}).then(state.finishTransition.bind(this)).catch((e)=>{
+					}).then(state.finishTransition.bind(this)).catch((e) => {
 						state.failHandler();
 						throw e;
 					});
@@ -3182,6 +3189,7 @@
 				}
 				if(sessionParams['timeout']) {
 					this.keepaliveInterval = Number(sessionParams['timeout']) * 500; // * 1000 / 2
+					alert("this.keepaliveInterval : " + this.keepaliveInterval);
 				}
 				/*if(!/RTP\/AVP\/TCP;unicast;interleaved=/.test(_data.headers["transport"])) {
 					// TODO: disconnect stream and notify client
@@ -3530,8 +3538,8 @@
 				"ssrc:"      + this.ssrc      + ")";
 		}
 
-		isVideo(){return this.media.type == 'video';}
-		isAudio(){return this.media.type == 'audio';}
+		isVideo() { return this.media.type == 'video'; }
+		isAudio() { return this.media.type == 'audio'; }
 
 		
 	}
@@ -3573,7 +3581,7 @@
 	}
 
 	class RTSPMessage {
-		static get RTSP_1_0() {return  "RTSP/1.0";}
+		static get RTSP_1_0() { return  "RTSP/1.0"; }
 
 		constructor(_rtsp_version) {
 			this.version = _rtsp_version;
@@ -3609,7 +3617,7 @@
 			parsed.code = Number(parsed.code);
 			let lineIdx = 1;
 
-			while (lines[lineIdx]) {
+			while(lines[lineIdx]) {
 				let [k,v] = lines[lineIdx].split(/:(.+)/);
 				parsed.headers[k.toLowerCase()] = v.trim();
 				lineIdx++;
@@ -3652,7 +3660,7 @@
 				nal_start_idx += 2;
 			}
 			let ret = [];
-			while (nal_start_idx < data.byteLength) {
+			while(nal_start_idx < data.byteLength) {
 				let size = data.getUint16(nal_start_idx);
 				nal_start_idx += 2;
 				let header = NALUAsm.parseNALHeader(data.getInt8(nal_start_idx));
@@ -3814,7 +3822,7 @@
 				return frames;
 			} else {
 				let aacData = rawData.subarray(auHeadersLengthPadded);
-				while (true) {
+				while(true) {
 					if(aacData[offset] !=255) break;
 					++offset;
 				}
@@ -3879,9 +3887,9 @@
 				connected: {value: false, writable: true}
 			});
 
-			this._onData = ()=>{
+			this._onData = () => {
 				if(this.connected) {
-					while (this.transport.dataQueue.length) {
+					while(this.transport.dataQueue.length) {
 						this.onData(this.transport.dataQueue.pop());
 					}
 				}
@@ -3947,7 +3955,7 @@
 		}
 
 		startStreamFlush() {
-			this.flushInterval = setInterval(()=>{
+			this.flushInterval = setInterval(() => {
 				if(!this.paused) {
 					this.eventSource.dispatchEvent('flush');
 				}
@@ -3986,14 +3994,14 @@
 	}
 
 	class AACParser {
-		static get SampleRates() {return  [
+		static get SampleRates() { return  [
 			96000, 88200,
 			64000, 48000,
 			44100, 32000,
 			24000, 22050,
 			16000, 12000,
 			11025, 8000,
-			7350];}
+			7350]; }
 
 		// static Profile = [
 		//     0: Null
@@ -4123,17 +4131,17 @@
 	const LOG_TAG$4 = "client:rtsp";
 	const Log$9 = getTagged(LOG_TAG$4);
 
-
-
+	// ##############################################################################
 	class RTSPClient extends BaseClient {
-		constructor(options={flush: 100}) {
+		constructor(options = {flush : 100}) {
 			super(options);
 			this.clientSM = new RTSPClientSM(this);
+			Log$9.debug("this.clientSM : " + this.clientSM);
 			this.clientSM.ontracks = (tracks) => {
 				this.eventSource.dispatchEvent('tracks', tracks);
 				this.startStreamFlush();
 			};
-			this.sampleQueues={};
+			this.sampleQueues = {};
 		}
 		
 		static streamType() {
@@ -4144,6 +4152,7 @@
 			super.setSource(url);
 			this.clientSM.setSource(url);
 		}
+
 		attachTransport(transport) {
 			super.attachTransport(transport);
 			this.clientSM.transport = transport;
@@ -4156,7 +4165,7 @@
 
 		reset() {
 			super.reset();
-			this.sampleQueues={};
+			this.sampleQueues = {};
 		}
 
 		destroy() {
@@ -4234,17 +4243,17 @@
 	}
 
 	class RTSPClientSM extends StateMachine {
-		static get USER_AGENT() {return 'SFRtsp 0.3';}
-		static get STATE_INITIAL() {return  1 << 0;}
-		static get STATE_OPTIONS() {return 1 << 1;}
-		static get STATE_DESCRIBE () {return  1 << 2;}
-		static get STATE_SETUP() {return  1 << 3;}
-		static get STATE_STREAMS() {return 1 << 4;}
-		static get STATE_TEARDOWN() {return  1 << 5;}
-		static get STATE_PLAY() {return  1 << 6;}
-		static get STATE_PLAYING() {return  1 << 7;}
-		static get STATE_PAUSE() {return  1 << 8;}
-		static get STATE_PAUSED() {return  1 << 9;}
+		static get USER_AGENT() { return 'SFRtsp 0.3'; }
+		static get STATE_INITIAL() { return  1 << 0; }
+		static get STATE_OPTIONS() { return 1 << 1; }
+		static get STATE_DESCRIBE () { return  1 << 2; }
+		static get STATE_SETUP() { return  1 << 3; }
+		static get STATE_STREAMS() { return 1 << 4; }
+		static get STATE_TEARDOWN() { return  1 << 5; }
+		static get STATE_PLAY() { return  1 << 6; }
+		static get STATE_PLAYING() { return  1 << 7; }
+		static get STATE_PAUSE() { return  1 << 8; }
+		static get STATE_PAUSED() { return  1 << 9; }
 		// static STATE_PAUSED = 1 << 6;
 
 		constructor(parent) {
@@ -4270,10 +4279,10 @@
 			}).addState(RTSPClientSM.STATE_STREAMS, {
 
 			}).addState(RTSPClientSM.STATE_TEARDOWN, {
-				activate: ()=>{
+				activate: () => {
 					this.started = false;
 				},
-				finishTransition: ()=>{
+				finishTransition: () => {
 					return this.transitionTo(RTSPClientSM.STATE_INITIAL)
 				}
 			}).addTransition(RTSPClientSM.STATE_INITIAL, RTSPClientSM.STATE_OPTIONS)
@@ -4295,17 +4304,17 @@
 			this.shouldReconnect = false;
 
 			// TODO: remove listeners
-			// this.connection.eventSource.addEventListener('connected', ()=>{
+			// this.connection.eventSource.addEventListener('connected', () => {
 			//     if(this.shouldReconnect) {
 			//         this.reconnect();
 			//     }
 			// });
-			// this.connection.eventSource.addEventListener('disconnected', ()=>{
+			// this.connection.eventSource.addEventListener('disconnected', () => {
 			//     if(this.started) {
 			//         this.shouldReconnect = true;
 			//     }
 			// });
-			// this.connection.eventSource.addEventListener('data', (data)=>{
+			// this.connection.eventSource.addEventListener('data', (data) => {
 			//     let channel = new DataView(data).getUint8(1);
 			//     if(this.rtp_channels.has(channel)) {
 			//         this.onRTP({packet: new Uint8Array(data, 4), type: channel});
@@ -4445,7 +4454,7 @@
 			if(this.authenticator) {
 				_params['Authorization'] = this.authenticator(_cmd);
 			}
-			return this.send(MessageBuilder.build(_cmd, _host, _params, _payload), _cmd).catch((e)=>{
+			return this.send(MessageBuilder.build(_cmd, _host, _params, _payload), _cmd).catch((e) => {
 				if((e instanceof AuthError) && !_params['Authorization'] ) {
 					return this.sendRequest(_cmd, _host, _params, _payload);
 				} else {
@@ -4489,7 +4498,7 @@
 							let [k,v] = c.split('=');
 							parsedChunks[k] = v.substr(1, v.length-2);
 						}
-						this.authenticator = (_method)=>{
+						this.authenticator = (_method) => {
 							let ep = this.parent.endpoint;
 							let ha1 = md5(`${ep.user}:${parsedChunks.realm}:${ep.pass}`);
 							let ha2 = md5(`${_method}:${this.url}`);
@@ -4498,7 +4507,7 @@
 							return `Digest username="${ep.user}", realm="${parsedChunks.realm}", nonce="${parsedChunks.nonce}", uri="${this.url}", response="${response}"${tail}`;
 						};
 					} else {
-						this.authenticator = ()=>{return `Basic ${btoa(this.parent.endpoint.auth)}`;};
+						this.authenticator = () => { return `Basic ${btoa(this.parent.endpoint.auth)}`; };
 					}
 
 					throw new AuthError(parsed);
@@ -4528,11 +4537,11 @@
 		sendDescribe() {
 			return this.sendRequest('DESCRIBE', this.url, {
 				'Accept': 'application/sdp'
-			}).then((data)=>{
+			}).then((data) => {
 				this.sdp = new SDPParser();
-				return this.sdp.parse(data.body).catch(()=>{
+				return this.sdp.parse(data.body).catch(() => {
 					throw new Error("Failed to parse SDP");
-				}).then(()=>{return data;});
+				}).then(() => { return data; });
 			});
 		}
 
@@ -4574,7 +4583,7 @@
 				let setupPromise = this.streams[track_type].start();
 				this.parent.sampleQueues[PayloadType.string_map[track.rtpmap[track.fmt[0]].name]]=[];
 				this.rtpBuffer[track.fmt[0]]=[];
-				streams.push(setupPromise.then(({track, data})=>{
+				streams.push(setupPromise.then(({track, data}) => {
 					this.timeOffset[track.fmt[0]] = 0;
 					try {
 						let rtp_info = data.headers["rtp-info"].split(';');
@@ -4631,7 +4640,7 @@
 					return res;
 				}));
 			}
-		return Promise.all(streams).then((tracks)=>{
+		return Promise.all(streams).then((tracks) => {
 			var is = true;
 
 			if(is == true) {
@@ -4640,7 +4649,7 @@
 					sessionPromises.push(this.sessions[session].start());
 				}
 
-				return Promise.all(sessionPromises).then(()=>{
+				return Promise.all(sessionPromises).then(() => {
 					if(this.ontracks) {
 						this.ontracks(tracks);
 					}
@@ -4651,7 +4660,7 @@
 					this.ontracks(tracks);
 				}
 			}
-		}).catch((e)=>{
+		}).catch((e) => {
 			console.error(e);
 			this.stop();
 		this.reset();
@@ -4683,7 +4692,7 @@
 			let queue = this.rtpBuffer[rtp.pt];
 			queue.push(rtp);
 
-			while (queue.length) {
+			while(queue.length) {
 				let rtp = queue.shift();
 
 				rtp.timestamp = rtp.timestamp-this.timeOffset[rtp.pt]-this.lastTimestamp[rtp.pt];
@@ -4854,7 +4863,7 @@
 				if(s === 0)
 					len -= 8;
 				else
-					while (s < 128) {
+					while(s < 128) {
 						s <<= 1;
 						--len;
 					}
@@ -5280,7 +5289,7 @@
 			if(len >= 0) {
 				// definite length
 				var end = start + len;
-				while (stream.pos < end)
+				while(stream.pos < end)
 					sub[sub.length] = ASN1.decode(stream);
 				if(stream.pos != end)
 					throw "Content size is not correct for container starting at offset " + start;
@@ -5413,7 +5422,7 @@
 	  if(rng_state == null) {
 		rng_state = prng_newstate();
 		// At this point, we may not have collected enough entropy.  If not, fall back to Math.random
-		while (rng_pptr < rng_psize) {
+		while(rng_pptr < rng_psize) {
 		  var random = Math.floor(65536 * Math.random());
 		  rng_pool[rng_pptr++] = random & 255;
 		}
@@ -5432,7 +5441,7 @@
 	}
 
 	class SecureRandom {
-	  constructor(){}
+	  constructor() {}
 	}
 
 	SecureRandom.prototype.nextBytes = rng_get_bytes;
@@ -5849,7 +5858,7 @@
 
 	// Modular reduction using "classic" algorithm
 	class Classic{
-	  constructor(m){
+	  constructor(m) {
 		this.m = m;
 	  }
 	}
@@ -7186,7 +7195,7 @@
 				r[fname]=f;
 			}
 		}
-	} : function(){};
+	} : function() {};
 
 	JSX.extend = function(subc, superc, overrides) {
 		if(!superc||!subc) {
@@ -8467,7 +8476,7 @@
 		var asn1 = ASN1.decode(der);
 
 		//Fixes a bug with OpenSSL 1.0+ private keys
-		if(asn1.sub.length === 3){
+		if(asn1.sub.length === 3) {
 			asn1 = asn1.sub[2].sub[0];
 		}
 		if(asn1.sub.length === 9) {
@@ -8946,7 +8955,7 @@
 		}
 
 		reconnect() {
-			return this.disconnect().then(()=>{
+			return this.disconnect().then(() => {
 				return this.connect();
 			});
 		}
@@ -8977,10 +8986,13 @@
 
 	const LOG_TAG$5 = "transport:ws";
 	const Log$10 = getTagged(LOG_TAG$5);
+
+	// ####################################################################
+	// [ord 4]
 	class WebsocketTransport extends BaseTransport {
-		constructor(endpoint, stream_type, options={
-			socket:`${location.protocol.replace('http', 'ws')}//${location.host}/ws/`,
-			workers: 1
+		constructor(endpoint, stream_type, options = {
+			socket : `${location.protocol.replace('http', 'ws')}//${location.host}/ws/`,
+			workers : 1
 		}) {
 			super(endpoint, stream_type);
 			this.proxies = [];
@@ -8988,10 +9000,11 @@
 			this.workers = 1;
 			this.socket_url = options.socket;
 			this.ready = this.connect();
+			this.retryCount = 2;
 		}
 
 		destroy() {
-			return this.disconnect().then(()=>{
+			return this.disconnect().then(() => {
 				return super.destroy();
 			});
 
@@ -9005,23 +9018,35 @@
 			return ['hls', 'rtsp'];
 		}
 
+		// ############################################################
+		// ### [WebsocketTransport] connect
+		// [ord 5]
 		connect() {
-			return this.disconnect().then(()=>{
+			return this.disconnect().then(() => {
 				let promises = [];
+
 				// TODO: get mirror list
 				for(let i=0; i<this.workers; ++i) {
 					let proxy = new WebSocketProxy(this.socket_url, this.endpoint, this.stream_type);
 
-					proxy.set_disconnect_handler((e)=> {
-						this.eventSource.dispatchEvent('disconnected', {code: e.code, reason: e.reason});
+					proxy.set_disconnect_handler((e) => { 
+
+						/*
+						console.log(`여기 connect() --> 에러 ` + e.code + " : " + e.reason);
+						*/
+
+						this.eventSource.dispatchEvent('disconnected', {code : e.code, reason : e.reason});
 						// TODO: only reconnect on demand
-						if([1000, 1006, 1013, 1011].includes(e.code)) {
-							setTimeout(()=> {
-								if(this.ready && this.ready.reject) {
-									this.ready.reject();
-								}
-								this.ready = this.connect();
-							}, 3000);
+						if([1000, 1006, 1013, 1011, 3000].includes(e.code)) {
+							if(this.retryCount > 0) {
+								setTimeout(()=> {
+									if(this.ready && this.ready.reject) {
+										this.ready.reject();
+									}
+									this.ready = this.connect();
+									this.retryCount--;
+								}, 3000);
+							}
 						}
 					});
 
@@ -9068,21 +9093,20 @@
 		}
 	}
 
+	// ####################################################################
+	// [ord 7]
 	class WSPProtocol {
-		static get PROTO() {return  'WSP';}
+		static get PROTO() { return 'WSP'; }
+		static get V1_1() { return '1.1'; }
+		static get CMD_INIT() { return 'INIT'; }
+		static get CMD_JOIN() { return 'JOIN'; }
+		static get CMD_WRAP() { return 'WRAP'; }
 
-		static get V1_1() {return '1.1';}
-
-		static get CMD_INIT() {return 'INIT';}
-		static get CMD_JOIN() {return  'JOIN';}
-		static get CMD_WRAP() {return  'WRAP';}
-
-
-		constructor(ver){
+		constructor(ver) {
 			this.ver = ver;
 		}
 
-		build(cmd, data, payload=''){
+		build(cmd, data, payload='') {
 			let data_str='';
 			if(!data.seq) {
 				data.seq = ++WSPProtocol.seq;
@@ -9104,7 +9128,7 @@
 					data: {},
 					payload: ''
 				};
-				while (lines.length) {
+				while(lines.length) {
 					let line = lines.shift();
 					if(line) {
 						let [k,v] = line.split(':');
@@ -9121,16 +9145,18 @@
 	}
 	WSPProtocol.seq = 0;
 
+	// ####################################################################
+	// [ord 6]
 	class WebSocketProxy {
-		static get CHN_CONTROL() {return 'control';}
-		static get CHN_DATA() {return  'data';}
+		static get CHN_CONTROL() { return 'control'; }
+		static get CHN_DATA() { return  'data'; }
 
 		constructor(wsurl, endpoint, stream_type) {
 			this.url = wsurl;
 			this.stream_type = stream_type;
 			this.endpoint = endpoint;
-			this.data_handler = ()=>{};
-			this.disconnect_handler = ()=>{};
+			this.data_handler = () => {};
+			this.disconnect_handler = () => {};
 			this.builder = new WSPProtocol(WSPProtocol.V1_1);
 			this.awaitingPromises = {};
 			this.seq = 0;
@@ -9147,10 +9173,10 @@
 
 		close() {
 			Log$10.log('closing connection');
-			return new Promise((resolve)=>{
-				this.ctrlChannel.onclose = ()=>{
+			return new Promise((resolve) => {
+				this.ctrlChannel.onclose = () => {
 					if(this.dataChannel) {
-						this.dataChannel.onclose = ()=>{
+						this.dataChannel.onclose = () => {
 							Log$10.log('closed');
 							resolve();
 						};
@@ -9164,35 +9190,25 @@
 			});
 		}
 
-		onDisconnect(){
-			this.ctrlChannel.onclose=null;
-			this.ctrlChannel.close();
-			if(this.dataChannel) {
-				this.dataChannel.onclose = null;
-				this.dataChannel.close();
-			}
-			this.disconnect_handler(this);
-		}
-
 		initDataChannel(channel_id) {
-			return new Promise((resolve, reject)=>{
+			return new Promise((resolve, reject) => {
 				this.dataChannel = new WebSocket(this.url, WebSocketProxy.CHN_DATA);
 				this.dataChannel.binaryType = 'arraybuffer';
-				this.dataChannel.onopen = ()=>{
+				this.dataChannel.onopen = () => {
 					let msg = this.builder.build(WSPProtocol.CMD_JOIN, {
 						channel: channel_id
 					});
 					Log$10.debug(msg);
 					this.dataChannel.send(msg);
 				};
-				this.dataChannel.onmessage = (ev)=>{
+				this.dataChannel.onmessage = (ev) => {
 					Log$10.debug(`[data]\r\n${ev.data}`);
 					let res = WSPProtocol.parse(ev.data);
 					if(!res) {
 						return reject();
 					}
 
-					this.dataChannel.onmessage=(e)=>{
+					this.dataChannel.onmessage=(e) => {
 						// Log.debug('got data');
 						if(this.data_handler) {
 							this.data_handler(e.data);
@@ -9200,11 +9216,11 @@
 					};
 					resolve();
 				};
-				this.dataChannel.onerror = (e)=>{
+				this.dataChannel.onerror = (e) => {
 					Log$10.error(`[data] ${e.type}`);
 					this.dataChannel.close();
 				};
-				this.dataChannel.onclose = (e)=>{
+				this.dataChannel.onclose = (e) => {
 					Log$10.error(`[data] ${e.type}. code: ${e.code}, reason: ${e.reason || 'unknown reason'}`);
 					this.onDisconnect(e);
 				};
@@ -9213,21 +9229,21 @@
 
 		connect() {
 			this.encryptionKey = null;
-			return new Promise((resolve, reject)=>{
+			return new Promise((resolve, reject) => {
 				this.ctrlChannel = new WebSocket(this.url, WebSocketProxy.CHN_CONTROL);
 
 				this.connected = false;
 
-				this.ctrlChannel.onopen = ()=>{
+				this.ctrlChannel.onopen = () => {
 					let headers = {
-						proto: this.stream_type
+						proto : this.stream_type
 					};
 					if(this.endpoint.socket) {
 						headers.socket = this.endpoint.socket;
 					} else {
 						Object.assign(headers, {
-							host:  this.endpoint.host,
-							port:  this.endpoint.port
+							host : this.endpoint.host,
+							port : this.endpoint.port
 						});
 					}
 					let msg = this.builder.build(WSPProtocol.CMD_INIT, headers);
@@ -9235,8 +9251,8 @@
 					this.ctrlChannel.send(msg);
 				};
 
-				this.ctrlChannel.onmessage = (ev)=>{
-					Log$10.debug(`[ctrl]\r\n${ev.data}`);
+				this.ctrlChannel.onmessage = (ev) => {
+					Log$10.debug(`[ctrl] <<ctrlChannel.onmessage>>\r\n${ev.data}`);
 
 					let res = WSPProtocol.parse(ev.data);
 					if(!res) {
@@ -9244,12 +9260,12 @@
 					}
 
 					if(res.code >= 300) {
-						Log$10.error(`[ctrl]\r\n${res.code}: ${res.msg}`);
+						Log$10.error(`[ctrl] <<res.code >= 300>> \r\n${res.code}: ${res.msg}`);
 						return reject();
 					}
 					this.ctrlChannel.onmessage = (e)=> {
 						let res = WSPProtocol.parse(e.data);
-						Log$10.debug(`[ctrl]\r\n${e.data}`);
+						Log$10.debug(`[ctrl] <<ctrlChannel.onmessage(e)>> \r\n${e.data}`);
 						if(res.data.seq in this.awaitingPromises) {
 							if(res.code < 300) {
 								this.awaitingPromises[res.data.seq].resolve(res);
@@ -9267,15 +9283,49 @@
 					this.initDataChannel(res.data.channel).then(resolve).catch(reject);
 				};
 
-				this.ctrlChannel.onerror = (e)=>{
-					Log$10.error(`[ctrl] ${e.type}`);
+				this.ctrlChannel.onerror = (e) => {
+					Log$10.error(`[ctrl] <<ctrlChannel.onerror>> ${e.type}`);
 					this.ctrlChannel.close();
 				};
-				this.ctrlChannel.onclose = (e)=>{
-					Log$10.error(`[ctrl] ${e.type}. code: ${e.code} ${e.reason || 'unknown reason'}`);
+
+				this.ctrlChannel.onclose = (e) => {
+					Log$10.error(`[ctrl] <<ctrlChannel.onclose>> ${e.type}. code: ${e.code} ${e.reason || 'unknown reason'}`);
+					/*
+					alert(this.clientSM);
+					*/
+					/*
+					console.log("############################");
+					console.log("this.ctrlChannel.onclose --> " + objToString(this));
+					console.log("endpoint --> " + objToString(this.endpoint));
+					console.log("builder --> " + objToString(this.builder));
+					console.log("ctrlChannel --> " + objToString(this.ctrlChannel));
+					
+					console.log("############################");
+					*/
 					this.onDisconnect(e);
 				};
 			});
+		}
+
+		// ### 연결 해제 시킴 : <-- this.onDisconnect(e);
+		onDisconnect(e) {
+			/*
+			console.log("############################");
+			Log$10.error(`[ctrl] <<onDisconnect(e)>> ${e.type}. code: ${e.code} ${e.reason || 'unknown reason'}`);
+			console.log("############################");
+			*/
+
+			this.ctrlChannel.onclose = null;
+			this.ctrlChannel.close();
+			if(this.dataChannel) {
+				this.dataChannel.onclose = null;
+				this.dataChannel.close();
+			}
+
+			/*
+			this.disconnect_handler(this);
+			*/
+			this.disconnect_handler(e);
 		}
 
 		encrypt(msg) {
@@ -9305,7 +9355,7 @@
 			};
 			return {
 				seq:data.seq,
-				promise: new Promise((resolve, reject)=>{
+				promise: new Promise((resolve, reject) => {
 					this.awaitingPromises[data.seq] = {resolve, reject};
 					let msg = this.builder.build(WSPProtocol.CMD_WRAP, data, payload);
 					Log$10.debug(msg);
@@ -9317,8 +9367,8 @@
 	const Log$11 = getTagged('wsp');
 
 	class StreamType$1 {
-		static get HLS() {return 'hls';}
-		static get RTSP() {return 'rtsp';}
+		static get HLS() { return 'hls'; }
+		static get RTSP() { return 'rtsp'; }
 
 		static isSupported(type) {
 			return [StreamType$1.HLS, StreamType$1.RTSP].includes(type);
@@ -9332,11 +9382,11 @@
 				return null;
 			}
 			switch (parsed.protocol) {
-				case 'rtsp':
+				case 'rtsp' :
 					return StreamType$1.RTSP;
-				case 'http':
-				case 'https':
-					if(url.indexOf('.m3u8')>=0) {
+				case 'http' :
+				case 'https' :
+					if(url.indexOf('.m3u8') >= 0) {
 						return StreamType$1.HLS;
 					} else {
 						return null;
@@ -9359,6 +9409,8 @@
 		}
 	}
 
+	// ####################################################################
+	// [ord 3]
 	class WSPlayer {
 
 		constructor(node, opts) {
@@ -9421,7 +9473,7 @@
 				console.log("Fail setSource");
 			}
 
-			this.player.addEventListener('play', ()=>{
+			this.player.addEventListener('play', () => {
 				if(!this.isPlaying()) {
 					this.client.start();
 					/*
@@ -9435,14 +9487,14 @@
 				}
 			}, false);
 
-			this.player.addEventListener('pause', ()=>{
+			this.player.addEventListener('pause', () => {
 				this.client.stop();
 			}, false);
 		}
 
 		// TODO: check native support
 		isPlaying() {
-			if(this.client.paused === undefined || this.client.paused == null) {
+			if(typeof this.client.paused === "undefined" || this.client.paused === undefined || this.client.paused == null || this.client.paused == "undefined" || this.client.paused == "") {
 				return !(this.player.paused);
 			}
 			else {
@@ -9546,7 +9598,7 @@
 
 		start() {
 			if(this.client) {
-				this.client.start().catch((e)=>{
+				this.client.start().catch((e) => {
 					if(this.errorHandler) {
 						this.errorHandler(e);
 					}
@@ -9582,6 +9634,8 @@
 	getTagged("client:rtsp").setLevel(LogLevel.Debug);
 	getTagged("mse").setLevel(LogLevel.Debug);
 
+	// #################################################################### 
+	// [ord 1]
 	window.Streamedian = {
 		logger(tag) {
 			return getTagged(tag)
@@ -9591,13 +9645,13 @@
 				throw new Error("socket parameter is not set");
 			}
 			let _options = {
-				modules: [
+				modules : [
 					{
-						client: RTSPClient,
-						transport: {
-							constructor: WebsocketTransport,
-							options: {
-								socket: opts.socket
+						client : RTSPClient,
+						transport : {
+							constructor : WebsocketTransport,
+							options : {
+								socket : opts.socket
 							}
 						}
 					}
@@ -9617,8 +9671,11 @@
 					});
 				}
 			};
+
+			// [ord 2]
 			return new WSPlayer(node, _options);
 		}
 	};
+	// #################################################################### 
 }());
 //# sourceMappingURL=free.player.1.8.js.map
