@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+sdp<!DOCTYPE html>
 <html lang="en">
 <head>
 	<!--
@@ -26,6 +26,10 @@
 				var varName = parameters[i].split('=')[0];
 				if (varName.toUpperCase() == paramName.toUpperCase()) {
 					returnValue = parameters[i].split('=')[1];
+					returnValue = decodeURIComponent(returnValue);
+					if(returnValue.indexOf('└') > -1){
+						returnValue = returnValue.split('└').join('=');
+					}
 					return decodeURIComponent(returnValue);
 				}
 			}
@@ -155,7 +159,7 @@
 			if(typeof point === "undefined" || point === undefined || point == null || point == "undefined" || point == "") {
 				point = "normal";
 			}
-
+			//alert(getParameters("cctvUrl"))
 			set_url(getParameters("cctvUrl"), getParameters("w"), getParameters("h"), getParameters("tp"), proxyServerWs, point);
 
 			/*
