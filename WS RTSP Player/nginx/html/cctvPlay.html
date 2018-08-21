@@ -1,4 +1,4 @@
-sdp<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 	<!--
@@ -136,6 +136,9 @@ sdp<!DOCTYPE html>
 					}
 					else {
 						if(started == true) {
+							/*
+							alert(fid);
+							*/
 							window.parent.postMessage({ ERR : 'play-success' + '|' + fid }, '*');
 						}
 					}
