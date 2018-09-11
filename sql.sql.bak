@@ -128,31 +128,3 @@ WHERE
 </insert>
 
 
-$.ajax({
-	type : "get",
-	url : "/mgnt/insertCctvCheckLogAjax",
-	data : {
-		"defect_sys" : serv,
-		"idx" : idx,
-		"defect_flag" : changeV,
-		"chkTp" : "0",
-		"equipTp" : ((serv == 'place1') ? "1" : "2"),
-		"defectYn" : changeV,
-		"defectReason" : "",
-		"chkCmt" : "",
-		"chkImg" : imageData,
-		"wrUsrTp" : "1",
-		"wrUsrId" : "digitalmayor",
-		"saveAudit" : "0"
-	},
-	beforeSend: function() {},
-	error : function(x, e) {},
-	success : function(result) {
-		if(result.resultcode == "OK") {
-			
-		}
-	},
-	complete: function() { 
-
-	}
-});
