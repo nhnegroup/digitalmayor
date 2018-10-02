@@ -593,7 +593,7 @@ CREATE SEQUENCE DIGITALMAYOR.SEQ_MNG_DATA_SCHEMA
   CACHE 20
   NOORDER;
     
-
+$(¡®#btn¡¯).trigger(¡®click¡¯); 
 ======================================================================================
 
 
