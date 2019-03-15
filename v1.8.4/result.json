@@ -1,0 +1,5 @@
+callback({
+    data : 'data1',
+    data2 : 'data2',
+    ary_data : ['1', '2', '3', '4']
+})

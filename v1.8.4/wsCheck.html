@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<style>
+		body { margin:0;padding:0; }
+	</style>
+	<script>
+		// ########################################################################
+		var getParameters = function(paramName) {
+			// 리턴값을 위한 변수 선언
+			var returnValue;
+
+			// 현재 URL 가져오기
+			var url = location.href;
+
+			// get 파라미터 값을 가져올 수 있는 ? 를 기점으로 slice 한 후 split 으로 나눔
+			var parameters = (url.slice(url.indexOf('?') + 1, url.length)).split('&');
+
+			// 나누어진 값의 비교를 통해 paramName 으로 요청된 데이터의 값만 return
+			for(var i=0; i<parameters.length; i++) {
+				var varName = parameters[i].split('=')[0];
+				if (varName.toUpperCase() == paramName.toUpperCase()) {
+					returnValue = parameters[i].split('=')[1];
+					returnValue = decodeURIComponent(returnValue);
+					if(returnValue.indexOf('└') > -1){
+						returnValue = returnValue.split('└').join('=');
+					}
+					return decodeURIComponent(returnValue);
+				}
+			}
+		};		
+		// ########################################################################
+	</script>
+</head>
+<body> 
+	<script src="jquery-1.8.2.min.js"></script>
+	<script type="text/javascript">
+	<!--
+		var timeCount = 0;
+		// ########################################################################
+		$(function() {
+
+		});
+
+		// ########################################################################
+		// ### iframe 메세지 통신(receive)
+		window.addEventListener('message', function(e) {
+
+		});
+
+		// ########################################################################
+		window.onload = function() {
+			timeCount = getParameters("timeCount");
+			/*
+			$('#timeCount').html(timeCount);
+			*/
+
+			checkWebsocket(timeCount);
+		}
+
+		function checkWebsocket(tc) {
+			var ws = new WebSocket('ws://localhost:30022/ws/', 'control');
+			ws.onopen = function(e) {
+				window.parent.postMessage({ ERR : 'ws-success' + '|' + tc }, '*');
+				ws.close();
+				ws = null;
+			}
+			ws.onerror = function(e) {
+				window.parent.postMessage({ ERR : 'ws-fail' + '|' + tc }, '*');
+				ws = null;
+			}
+			ws.onmessage = function(e) { }
+			ws.onclose = function(e) { }
+		}
+
+		// ########################################################################
+		function sleep(ms) {
+			ts1 = new Date().getTime() + ms;
+			do ts2 = new Date().getTime(); while(ts2 < ts1);
+		}
+
+		// ########################################################################
+		var HttpClient = function() {
+			this.get = function(aUrl, aCallback) {
+				var anHttpRequest = new XMLHttpRequest();
+				anHttpRequest.onreadystatechange = function() { 
+					if(anHttpRequest.readyState == 4 && anHttpRequest.status == 200)
+						aCallback(anHttpRequest.responseText);
+					else if(anHttpRequest.readyState == 4 && anHttpRequest.status == 404)
+						aCallback("404");
+				}
+
+				anHttpRequest.open("GET", aUrl, true);            
+				anHttpRequest.send(null);
+			}
+		}
+
+		// ########################################################################
+		// ### 디버그 용
+		function objToString (obj) {
+			var str = '';
+			for(var p in obj) {
+				if(obj.hasOwnProperty(p)) {
+					str += p + '::' + obj[p] + '\n';
+				}
+			}
+			return str;
+		}
+		// ########################################################################
+	//-->
+	</script>
+
+	<p id="timeCount"></p>
+</body>
+</html>
