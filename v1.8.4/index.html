@@ -39,7 +39,40 @@
 <body>
 <div id="sourcesNode"></div>
 <div>
-    <input  id="stream_url" size="36">
+<script>
+var rtspServerIp = "rtsp://98.33.0.153:7102/";
+for(var i=0; i<38; i++) {
+	if((i+1) != 1 && (i+1) != 2 && (i+1) != 38) {
+		document.write("<a href=\"javascript:setPlayerSource('" + rtspServerIp + (i+1) + ".main');\">" + rtspServerIp + (i+1) + ".main</a>");
+
+		if(i%3 == 0) {
+			document.write("<br/>");
+		}
+		else {
+			document.write("\r");
+		}
+	}
+}
+
+document.write("<br/>");
+document.write("<br/>");
+for(var i=100; i<114; i++) {
+	document.write("<a href=\"javascript:setPlay('" + rtspServerIp + (i+1) + ".main');\">" + rtspServerIp + (i+1) + ".main</a>");
+
+	if(i%3 == 0) {
+		document.write("<br/>");
+	}
+	else {
+		document.write("\r");
+	}
+}
+
+function setPlay(url) {
+	document.getElementById("stream_url").value = url;
+	setPlayerSource(url);
+}
+</script>
+    <input  id="stream_url" name="stream_url" size="36">
     <button id="set_new_url">Set</button>
 </div>
 <div>
